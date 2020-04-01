@@ -32,6 +32,7 @@ public class Client {
     public int getServiceTime() {
         return serviceTime;
     }
+    //afisare client
     public String toString(){
         return "("+ID+","+arrivalTime+","+serviceTime+")";
     }

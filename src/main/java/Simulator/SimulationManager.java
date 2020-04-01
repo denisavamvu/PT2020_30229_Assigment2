@@ -53,7 +53,17 @@ public class SimulationManager implements Runnable {
         client.setServiceTime(n);
         return client;
     }
-    public synchronized void run() {
+    public void printStatus(PrintWriter writer){
+        String s="";
+        writer.println("Waiting clients:");
+        for(Client client: clients)
+            s+=client.toString()+",";
+        writer.println(s);
+        for(Server server: scheduler.getServers())
+            writer.println(server.toString());
+        writer.println();
+    }
+    public PrintWriter makeOutputfile(){
         PrintWriter writer = null;
         try {
             writer = new PrintWriter(filename, "UTF-8");
@@ -62,7 +72,10 @@ public class SimulationManager implements Runnable {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-
+        return writer;
+    }
+    public synchronized void run() {
+        PrintWriter writer = makeOutputfile();
         int i=1;
         float waitingTime=0;
         for(Server server: scheduler.getServers()) {
@@ -80,23 +93,14 @@ public class SimulationManager implements Runnable {
                     c.remove();
                 }
             }
-
-            String s="";
             writer.println("time: "+simulationTime);
-            writer.println("Waiting clients:");
-            for(Client client: clients)
-                s+=client.toString()+",";
-            writer.println(s);
-            for(Server server: scheduler.getServers())
-                writer.println(server.toString());
-            writer.println();
+            printStatus(writer);
             waitingTime+=this.scheduler.getCurrentWaitingTime();
             simulationTime++;
             for(Server server: scheduler.getServers()) {
                 server.setTimePassed(true);
                 server.interrupt();
             }
-
             try {
                 sleep(100);
             } catch (InterruptedException e) {
@@ -104,7 +108,6 @@ public class SimulationManager implements Runnable {
             }
             if(scheduler.noMoreClients()&&clients.isEmpty())
                 break;
-
             if(simulationTime==simulationInterval)
                 toRun=false;
         }

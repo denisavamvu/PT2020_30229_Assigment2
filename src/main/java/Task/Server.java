@@ -17,6 +17,7 @@ public class Server extends Thread{
     public void setToRun(boolean toRun){
         this.toRun=toRun;
     }
+    //continutul cozii
     public String toString(){
         String s=this.getName()+" ";
         if(clients.isEmpty())
@@ -26,6 +27,7 @@ public class Server extends Thread{
                 s+=client.toString();
         return s;
     }
+    //este coada goala?
     public boolean hasClients(){
         if(!clients.isEmpty())
             return true;
@@ -34,7 +36,7 @@ public class Server extends Thread{
     public void setTimePassed(boolean timePassed) {
         this.timePassed = timePassed;
     }
-    
+    //daca se trece la urmatorul pas in simulare, se proceseaza primul client, altfel se asteapta
     public synchronized void run(){
         while(toRun){
             if(timePassed)
@@ -51,7 +53,6 @@ public class Server extends Thread{
                 }
         }
         notifyAll();
-
     }
 
     public void addClient(Client client){
@@ -61,6 +62,8 @@ public class Server extends Thread{
     public int getWaitingPeriod(){
         return this.waitingPeriod;
     }
+    //procesam primul client din coada; se decrementeaza timpul de servire iar daca acesta devine 0,
+    //clientul a fost procesat total si eliminat din coada
     public void decFirstClient(){
         if(!clients.isEmpty())
         {
